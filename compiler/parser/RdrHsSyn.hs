@@ -2596,10 +2596,14 @@ mkChoiceDecls :: SrcSpan -> Located RdrName -> LHsLocalBinds GhcPs -> CombinedCh
 mkChoiceDecls templateLoc conName binds (CombinedChoiceData controllers observersM ChoiceData{..} choiceTyVars flexible) =
     [ noLoc (SigD noExt (TypeSig noExt [noLoc name] (mkHsWildCardBndrs (mkHsImplicitBndrs $ noLoc $ HsTupleTy noExt HsBoxedOrConstraintTuple [controllerSig, actionSig, consumingSig, observersSig]))))
     , noLoc (ValD noExt (FunBind noExt (noLoc name) (matchGroup noSrcSpan $ matchWithBinds (matchContext $ noLoc name) [] noSrcSpan (noLoc $ ExplicitTuple noExt (map (noLoc . Present noExt) [controllerDef, actionDef, consumingDef, observersDef]) Boxed) (noLoc emptyLocalBinds)) WpHole []))
+    , mkInstance "HasController"     [templateType, choiceType] $ mkMethod "getController"   [] True controllerDef
+    , mkInstance "HasConsuming"      [templateType, choiceType] $ mkMethod "consuming"       [] True consumingDef
+    , mkInstance "HasChoiceObserver" [templateType, choiceType] $ mkMethod "choiceObserver"  [] True observersDef
+    , mkInstance "HasChoiceApply"    [cdChoiceReturnTy, templateType, choiceType] $ mkMethod "applyChoice" [] True actionDef
     ]
     where
         name = mkRdrUnqual $ mkVarOcc ("_choice_" ++ rdrNameToString conName ++ rdrNameToString cdChoiceName)
-        consumingSig = (unLoc . mkQualType . show . fromMaybe Consuming <$> cdChoiceConsuming) `mkAppTy` templateType
+        consumingSig = (mkQualType $ show Consuming) `mkAppTy` templateType
         consumingDef = unLoc . mkQualVar . mkDataOcc . show . fromMaybe Consuming <$> cdChoiceConsuming
         controllerSig = mkFunTy templateType (mkFunTy choiceType partiesType)
         controllerDef = mkLambda controllerDefArgs controllers (Just (extendLetBindings binds (dummyBinds controllerDefArgs)))
@@ -2623,6 +2627,14 @@ mkChoiceDecls templateLoc conName binds (CombinedChoiceData controllers observer
         choiceType = mkChoiceType cdChoiceName choiceTyVars
         choiceReturnType = mkUpdate $ mkParenTy cdChoiceReturnTy
         contractIdType = mkContractId templateType
+        mkClass name  types= foldl' mkAppTy (mkQualClass name) types
+        mkInstance name types method =
+          instDecl $ classInstDecl (mkClass name types) $ unitBag method
+        mkMethod :: String -> [Pat GhcPs] -> Bool -> LHsExpr GhcPs -> LHsBind GhcPs
+        mkMethod methodName args includeBindings methodBody =
+          mkTemplateClassMethod methodName args methodBody $
+          allLetBindings includeBindings args binds
+
 
 emptyString :: LHsExpr GhcPs
 emptyString = noLoc $ HsLit noExt $ HsString NoSourceText $ fsLit ""

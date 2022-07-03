@@ -96,3 +96,15 @@ class HasToAnyChoice t c r | t c -> r where
 
 class HasFromAnyChoice t c r | t c -> r where
   _fromAnyChoice : proxy t -> Any -> Optional c
+
+class HasController t c where
+  getController : t -> c -> [Party]
+
+class HasChoiceApply r t c where
+  applyChoice : ContractId t -> t -> c -> Update r
+
+class HasConsuming t c where
+  consuming : Consuming t
+
+class HasChoiceObserver t c where
+  choiceObserver : Optional (t -> c -> [Party])
