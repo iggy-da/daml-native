@@ -8,6 +8,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+
 
 -- This file contains a minimal setup to allow the compilation of a desugared DAML template.
 
@@ -23,12 +26,13 @@ where
 import GHC.TypeLits (Symbol)
 import GHC.Types (primitive)
 import Data.String (IsString(..))
+import Control.Monad.Trans.Except
 
 data Any
-data ContractId a
-data Update a
+data ContractId a = ContractId
+type Update = ExceptT String IO
 data TypeRep
-data Party
+data Party = Party with name : String
 data Text
 
 data Optional a = None | Some a
@@ -37,8 +41,8 @@ optional : b -> (a -> b) -> Optional a -> b
 optional n _ None  = n
 optional _ f (Some x) = f x
 
-data Consuming t = Consuming {}
-data NonConsuming t = NonConsuming {}
+data Consuming t = Consuming {} | NonConsuming {}
+  deriving Show
 
 data Archive = Archive {}
 
@@ -58,17 +62,17 @@ instance IsParties (Optional Party) where
   toParties (Some p) = [p]
 
 instance Eq Party where (==) = undefined
-instance Show Party where show = undefined
+instance Show Party where show p = name p
 
-instance Functor Update where
-    fmap f x = x >>= \v -> pure (f v)
+-- instance Functor Update where
+--     fmap f x = x >>= \v -> pure (f v)
 
-instance Applicative Update where
-    pure = undefined
-    f <*> x = f >>= \f -> x >>= \x -> pure (f x)
+-- instance Applicative Update where
+--     pure = undefined
+--     f <*> x = f >>= \f -> x >>= \x -> pure (f x)
 
-instance Monad Update where
-    (>>=) = undefined
+-- instance Monad Update where
+--     (>>=) = undefined
 
 class HasSignatory t where
   signatory : t -> [Party]
@@ -189,3 +193,16 @@ _exerciseDefault = exerciseGuarded (const True)
 _exerciseInterfaceGuard : forall i t. HasFromInterface t i => (t -> Bool) -> (i -> Bool)
 _exerciseInterfaceGuard pred iface =
   optional False pred (fromInterface iface)
+
+class HasController t c where
+  getController : t -> c -> [Party]
+
+class HasChoiceApply r t c where
+  applyChoice : ContractId t -> t -> c -> Update r
+
+class HasConsuming t c where
+  consuming : Consuming t
+
+class HasChoiceObserver t c where
+  choiceObserver : Optional (t -> c -> [Party])
+
