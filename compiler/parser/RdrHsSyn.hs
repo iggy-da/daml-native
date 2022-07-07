@@ -2470,9 +2470,9 @@ mkTupleExp es = noLoc $ ExplicitTuple noExt (map (noLoc . Present noExt) es) Box
 mkRdrExp :: RdrName -> LHsExpr GhcPs
 mkRdrExp = noLoc . HsVar noExt . noLoc
 
--- | Qualify names with the 'DA.Internal.Desugar' desugaring module.
+-- | Qualify names with the ~'DA.Internal.Desugar'~ Prelude desugaring module.
 qualifyDesugar :: OccName -> RdrName
-qualifyDesugar = mkRdrQual (mkModuleName "DA.Internal.Desugar")
+qualifyDesugar = mkRdrQual (mkModuleName "Prelude")
 
 mkUnqualVar :: OccName -> LHsExpr GhcPs
 mkUnqualVar = noLoc . HsVar noExt . noLoc . mkRdrUnqual
