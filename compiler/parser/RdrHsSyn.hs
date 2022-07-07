@@ -860,7 +860,7 @@ filterCTuple rdr = rdr
 
 {- Note [setRdrNameSpace for wired-in names]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In GHC.Types, which declares (:), we have
+In Prelude, which declares (:), we have
   infixr 5 :
 The ambiguity about which ":" is meant is resolved by parsing it as a
 data constructor, but then using dataTcOccs to try the type constructor too;
@@ -2529,7 +2529,7 @@ mkPrimitive :: String -> LHsExpr GhcPs
 mkPrimitive methodName =
   let mkAppType :: LHsExpr GhcPs -> LHsType GhcPs -> LHsExpr GhcPs
       mkAppType e ty = noLoc $ HsAppType noExt e (mkHsWildCardBndrs ty)
-  in  mkAppType (noLoc $ HsVar noExt $ noLoc $ mkRdrQual (mkModuleName "GHC.Types") $ mkVarOcc "primitive") $
+  in  mkAppType (noLoc $ HsVar noExt $ noLoc $ mkRdrQual (mkModuleName "Prelude") $ mkVarOcc "primitive") $
         noLoc $ HsTyLit noExt $ HsStrTy NoSourceText $ mkFastString methodName
 
 mkPrimMethod :: String -> String -> LHsBind GhcPs
@@ -2578,6 +2578,7 @@ mkTemplateDataDecl loc lname@(L nloc _name) tyVars (conName, conDetails, conDoc)
         , tcdDataDefn = dataDefn
         }
   in L loc $ TyClD noExt dataDecl
+
 
 mkLambda
   :: [Pat GhcPs]                 -- ^ method argument patterns
