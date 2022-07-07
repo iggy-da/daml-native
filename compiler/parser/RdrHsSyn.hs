@@ -881,7 +881,7 @@ filterCTuple rdr = rdr
 
 {- Note [setRdrNameSpace for wired-in names]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In GHC.Types, which declares (:), we have
+In Prelude, which declares (:), we have
   infixr 5 :
 The ambiguity about which ":" is meant is resolved by parsing it as a
 data constructor, but then using dataTcOccs to try the type constructor too;
@@ -2719,20 +2719,20 @@ mkBind boundName args body mBinds = do
 
 mkPrimitive :: String -> String -> LHsExpr GhcPs
 mkPrimitive primitive methodName =
-  mkAppType (noLoc $ HsVar noExt $ noLoc $ mkRdrQual (mkModuleName "GHC.Types") $ mkVarOcc primitive) $
+  mkAppType (noLoc $ HsVar noExt $ noLoc $ mkRdrQual (mkModuleName "Prelude") $ mkVarOcc primitive) $
     noLoc $ HsTyLit noExt $ HsStrTy NoSourceText $ mkFastString methodName
 
 ghcTypesOpaque :: LHsType GhcPs
 ghcTypesOpaque =
-    noLoc $ HsTyVar noExt NotPromoted (noLoc $ mkRdrQual (mkModuleName "GHC.Types") $ mkTcOcc "Opaque")
+    noLoc $ HsTyVar noExt NotPromoted (noLoc $ mkRdrQual (mkModuleName "Prelude") $ mkTcOcc "Opaque")
 
 ghcTypesDamlTemplate :: LHsType GhcPs
 ghcTypesDamlTemplate =
-    noLoc $ HsTyVar noExt NotPromoted (noLoc $ mkRdrQual (mkModuleName "GHC.Types") $ mkTcOcc "DamlTemplate")
+    noLoc $ HsTyVar noExt NotPromoted (noLoc $ mkRdrQual (mkModuleName "Prelude") $ mkTcOcc "DamlTemplate")
 
 ghcTypesDamlInterface :: LHsType GhcPs
 ghcTypesDamlInterface =
-    noLoc $ HsTyVar noExt NotPromoted (noLoc $ mkRdrQual (mkModuleName "GHC.Types") $ mkTcOcc "DamlInterface")
+    noLoc $ HsTyVar noExt NotPromoted (noLoc $ mkRdrQual (mkModuleName "Prelude") $ mkTcOcc "DamlInterface")
 
 mkPrimMethod :: String -> String -> LHsBind GhcPs
 mkPrimMethod methodName primArg =
@@ -2801,7 +2801,7 @@ mkDamlDataDecl loc dataDeclName (conName, conDetails, conDoc) =
         }
   in L loc $ TyClD noExt dataDecl
 
--- | Construct a @data GHC.Types.DamlTemplate => X a b c = X {...} deriving (Eq, Show)@
+-- | Construct a @data Prelude.DamlTemplate => X a b c = X {...} deriving (Eq, Show)@
 mkTemplateDataDecl ::
      SrcSpan                 -- ^ the span to associate with
   -> Located RdrName         -- ^ template 'T'
