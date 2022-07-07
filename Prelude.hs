@@ -1,10 +1,11 @@
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE PackageImports #-}
 {-# LANGUAGE DamlSyntax #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE TypeApplications #-}
@@ -12,23 +13,17 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 
 
+module Prelude (module X, module Prelude) where
+import GHC.Types as X
+import "base" Prelude as X
+import "ghc-prim" GHC.Types
+
 -- This file contains a minimal setup to allow the compilation of a desugared DAML template.
 
-module DA.Internal.Desugar
-  ( module DA.Internal.Desugar
-  , concat
-  , Bool(..)
-  , Eq(..)
-  , Show(..)
-  )
-where
-
 import GHC.TypeLits (Symbol)
-import GHC.Types (primitive)
 import Data.String (IsString(..))
 import Control.Monad.Trans.Except
 
-data Any
 data ContractId a = ContractId
 type Update = ExceptT String IO
 data TypeRep
@@ -205,4 +200,23 @@ class HasConsuming t c where
 
 class HasChoiceObserver t c where
   choiceObserver : Optional (t -> c -> [Party])
+
+
+primitive : forall (f : Symbol) b. b
+primitive = primitive
+
+primitiveInterface : forall (f : Symbol) b. b
+primitiveInterface = primitiveInterface
+
+data Opaque = Opaque
+
+data Decimal = Decimal
+  deriving (Eq, Show)
+
+class DamlInterface
+instance DamlInterface
+
+class DamlTemplate
+instance DamlTemplate
+
 
