@@ -13,7 +13,7 @@ dnl
 # see what flags are available. (Better yet, read the documentation!)
 #
 
-AC_INIT([The Glorious Glasgow Haskell Compilation System], [8.8.1], [glasgow-haskell-bugs@haskell.org], [ghc-AC_PACKAGE_VERSION])
+AC_INIT([The Glorious Glasgow Haskell Compilation System], [8.8.2], [glasgow-haskell-bugs@haskell.org], [ghc-AC_PACKAGE_VERSION])
 
 # Set this to YES for a released version, otherwise NO
 : ${RELEASE=YES}
@@ -1240,12 +1240,13 @@ UseLibdw=NO
 USE_LIBDW=0
 AC_ARG_ENABLE(dwarf-unwind,
     [AC_HELP_STRING([--enable-dwarf-unwind],
-        [Enable DWARF unwinding support in the runtime system via elfutils' libdw [default=no]])],
-    [AC_CHECK_LIB(dw, dwfl_attach_state,
+        [Enable DWARF unwinding support in the runtime system via elfutils' libdw [default=no]])])
+if test "$enable_dwarf_unwind" = "yes" ; then
+  AC_CHECK_LIB(dw, dwfl_attach_state,
       [UseLibdw=YES],
-      [AC_MSG_ERROR([Cannot find system libdw (required by --enable-dwarf-unwind)])])],
-    [UseLibdw=NO]
-)
+      [AC_MSG_ERROR([Cannot find system libdw (required by --enable-dwarf-unwind)])])
+fi
+
 AC_SUBST(UseLibdw)
 if test $UseLibdw = "YES" ; then
 	USE_LIBDW=1
@@ -1290,8 +1291,14 @@ AC_SUBST(BUILD_MAN)
 AC_SUBST(BUILD_SPHINX_HTML)
 AC_SUBST(BUILD_SPHINX_PDF)
 
+dnl ** Determine library versions
+dnl The packages below should include all packages needed by
+dnl doc/users_guide/ghc_config.py.in.
 LIBRARY_VERSION(base)
 LIBRARY_VERSION(Cabal, Cabal/Cabal)
+LIBRARY_VERSION(template-haskell)
+LIBRARY_VERSION(parallel)
+LIBRARY_VERSION(array)
 LIBRARY_VERSION(ghc-prim)
 LIBRARY_VERSION(ghc-compact)
 LIBRARY_ghc_VERSION="$ProjectVersion"
