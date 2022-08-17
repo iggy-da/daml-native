@@ -2906,8 +2906,6 @@ mkTemplateInstanceDecl sharedBinds templateName conName ValidTemplate{..} =
   , ensureInstance
   , agreementInstance
   , archiveInstance
-  , mkInstance "HasCreate" $ mkPrimMethod "create" "UCreate"
-  , mkInstance "HasFetch" $ mkPrimMethod "fetch" "UFetch"
   , mkInstance "HasToAnyTemplate" $ mkPrimMethod "_toAnyTemplate" "EToAnyTemplate"
   , mkInstance "HasFromAnyTemplate" $ mkPrimMethod "_fromAnyTemplate" "EFromAnyTemplate"
   , mkInstance "HasTemplateTypeRep" $ mkPrimMethod "_templateTypeRep" "ETemplateTypeRep"
