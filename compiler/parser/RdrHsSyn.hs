@@ -2906,6 +2906,7 @@ mkTemplateInstanceDecl sharedBinds templateName conName ValidTemplate{..} =
   , ensureInstance
   , agreementInstance
   , archiveInstance
+  , mkInstance "HasCreate" $ mkPrimMethod "create" "UCreate"
   , mkInstance "HasFetch" $ mkPrimMethod "fetch" "UFetch"
   , mkInstance "HasToAnyTemplate" $ mkPrimMethod "_toAnyTemplate" "EToAnyTemplate"
   , mkInstance "HasFromAnyTemplate" $ mkPrimMethod "_fromAnyTemplate" "EFromAnyTemplate"
@@ -2974,6 +2975,7 @@ mkInterfaceInstanceDecl interfaceType interfacePrecondM =
   , mkInstance "HasTemplateTypeRep" $ mkPrimMethod "_templateTypeRep" "ETemplateTypeRep"
   , mkInstance "HasSignatory" $ mkPrimMethod "signatory" "ESignatoryInterface"
   , mkInstance "HasObserver" $ mkPrimMethod "observer" "EObserverInterface"
+  , mkInstance "HasCreate" $ mkPrimMethod "create" "UCreateInterface"
   , mkInstance "HasEnsure" $ mkMethod "ensure" [this] (fromMaybe mkTrue interfacePrecondM)
   , mkInstance "HasIsInterfaceType" $ mkMethod "_isInterfaceType" [proxy] mkTrue
   , mkInstance "Eq" $ mkPrimMethod "==" "BEEqual"
