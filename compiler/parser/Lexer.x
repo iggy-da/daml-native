@@ -953,7 +953,7 @@ reservedSymsFM = listToUFM $
        ,("-<<", ITLarrowtail NormalSyntax,  NormalSyntax,  xbit ArrowsBit)
        ,(">>-", ITRarrowtail NormalSyntax,  NormalSyntax,  xbit ArrowsBit)
 
-       ,("∷",   ITdcolon UnicodeSyntax,     UnicodeSyntax, 0 )
+       ,("∷",   ITof_type UnicodeSyntax,    UnicodeSyntax, 0 )
        ,("⇒",   ITdarrow UnicodeSyntax,     UnicodeSyntax, 0 )
        ,("∀",   ITforall UnicodeSyntax,     UnicodeSyntax, 0 )
        ,("→",   ITrarrow UnicodeSyntax,     UnicodeSyntax, 0 )
